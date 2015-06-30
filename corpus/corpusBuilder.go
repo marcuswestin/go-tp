@@ -1,6 +1,9 @@
 package corpus
 
-import "github.com/marcuswestin/go-tp/tokens"
+import (
+	"github.com/marcuswestin/go-tp/ngram"
+	"github.com/marcuswestin/go-tp/tokens"
+)
 
 /*
 1000000 * 10        * 1000                   * 16                                / 1024 / 1024 / 1024
@@ -26,8 +29,13 @@ func StartBuilding() *CorpusBuilder {
 	return &CorpusBuilder{make(map[string]bool), tokens.NewTokenTable()}
 }
 
-func (c *CorpusBuilder) AddDocument(document string) {
-	c.tokenTable.AddTokensFromDocument(document)
+func (c *CorpusBuilder) ProcessDocument(document string) {
+	bigramTable := ngram.NewNGramTable(2, c.tokenTable)
+	bigramTable.ProcessDocument(document)
+	bigramTable.PrintCounts()
+	quadGramTable := ngram.NewNGramTable(4, c.tokenTable)
+	quadGramTable.ProcessDocument(document)
+	quadGramTable.PrintCounts()
 	// c.ngramIndex.Add(text)
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/cespare/go-smaz"
 )
 
-type StringIndex int
+type StringIndex uint32
 
 type StringStore struct {
 	offsets  []int

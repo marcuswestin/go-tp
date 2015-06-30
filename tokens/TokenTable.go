@@ -1,10 +1,6 @@
 package tokens
 
-import (
-	"fmt"
-
-	"github.com/alasdairf/tokenize"
-)
+import "github.com/alasdairf/tokenize"
 
 type TokenId StringIndex
 
@@ -33,12 +29,10 @@ func Tokenize(doc string, wordFunc func(word string)) {
 	tokenize.AllInOne([]byte(doc), func(bs []byte) { wordFunc(string(bs)) }, lowercase, stripAccents, stripContractions, stripNumbers, stripForeign)
 }
 
-func (l *TokenTable) AddTokensFromDocument(doc string) (tokenIds []TokenId) {
+func (l *TokenTable) ProcessDocument(doc string) (tokenIds []TokenId) {
 	Tokenize(doc, func(word string) {
 		tokenIds = append(tokenIds, l.IdForWord(word))
-		fmt.Println("added", word)
 	})
-	fmt.Println("added document", tokenIds)
 	return
 }
 
