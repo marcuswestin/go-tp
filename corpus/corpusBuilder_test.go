@@ -7,6 +7,9 @@ import (
 )
 
 func TestCorpusBuilder(t *testing.T) {
-	builder := corpus.StartBuilding()
-	builder.AddDocument("Hello, how are you doing?")
+	corpus := corpus.StartBuilding(2, 3, 5, 7)
+	corpus.ProcessDocument("Hello, how are you doing?")
+	corpus.ProcessDocument("Tell me, what's the weather like?")
+	corpus.PrintCounts()
+	corpus.Freeze()
 }

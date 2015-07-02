@@ -15,28 +15,38 @@ words   * n counts  * words seen at that pos * count for up to 65000 occurances 
 14 GB
 */
 
-type Token int
-
-var NumTokens int
-
 type CorpusBuilder struct {
 	seenStrings map[string]bool
 	tokenTable  *tokens.TokenTable
+	ngramTables map[int]*ngram.NGramTable
 	// ngramIndex  ngram.NGramIndex
 }
 
-func StartBuilding() *CorpusBuilder {
-	return &CorpusBuilder{make(map[string]bool), tokens.NewTokenTable()}
+func StartBuilding(gramNs ...int) *CorpusBuilder {
+	c := &CorpusBuilder{make(map[string]bool), tokens.NewTokenTable(), map[int]*ngram.NGramTable{}}
+	for _, gramN := range gramNs {
+		c.ngramTables[gramN] = ngram.NewNGramTable(gramN, c.tokenTable)
+	}
+	return c
 }
 
 func (c *CorpusBuilder) ProcessDocument(document string) {
-	bigramTable := ngram.NewNGramTable(2, c.tokenTable)
-	bigramTable.ProcessDocument(document)
-	bigramTable.PrintCounts()
-	quadGramTable := ngram.NewNGramTable(4, c.tokenTable)
-	quadGramTable.ProcessDocument(document)
-	quadGramTable.PrintCounts()
-	// c.ngramIndex.Add(text)
+	for _, ngramTable := range c.ngramTables {
+		ngramTable.ProcessDocument(document)
+	}
+}
+
+func (c *CorpusBuilder) PrintCounts() {
+	for _, ngramTable := range c.ngramTables {
+		ngramTable.PrintCounts()
+	}
+}
+
+func (c *CorpusBuilder) Freeze() {
+	c.tokenTable.Freeze()
+	for _, ngramTable := range c.ngramTables {
+		ngramTable.Freeze()
+	}
 }
 
 // func (c *CorpusBuilder) Finish() {

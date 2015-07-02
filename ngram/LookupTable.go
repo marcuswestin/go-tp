@@ -77,3 +77,8 @@ func (n *NGramTable) StringForId(ngramId NGramId) string {
 	}
 	return strings.Join(result, " ")
 }
+
+// Frees up alot of used memory but prohibits adding more ngrams
+func (n *NGramTable) Freeze() {
+	n.seenGrams = nil
+}
