@@ -16,10 +16,8 @@ words   * n counts  * words seen at that pos * count for up to 65000 occurances 
 */
 
 type CorpusBuilder struct {
-	seenStrings map[string]bool
 	tokenTable  *tokens.TokenTable
 	ngramTables map[int]*ngram.NGramTable
-	// ngramIndex  ngram.NGramIndex
 }
 
 func StartBuilding(gramNs ...int) *CorpusBuilder {
@@ -48,19 +46,3 @@ func (c *CorpusBuilder) Freeze() {
 		ngramTable.Freeze()
 	}
 }
-
-// func (c *CorpusBuilder) Finish() {
-// 	if c.seenStrings == nil {
-// 		panic("not extracting")
-// 	}
-// 	c.numTokens = len(c.seenStrings)
-// 	for str := range c.seenStrings {
-
-// 	}
-// }
-
-// func StartCorpusExtraction() {
-
-// }
-
-// // func ExtractTokens(corpus string)
