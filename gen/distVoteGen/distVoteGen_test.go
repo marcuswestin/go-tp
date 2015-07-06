@@ -2,25 +2,18 @@ package distVoteGen
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/marcuswestin/go-tp/gen/distVoteGen"
 )
 
-func Example() {
-	err := run()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func run() (err error) {
+func TestExample(t *testing.T) {
 	model := distVoteGen.NewModel(10)
 	model.ProcessDocument("the cat sat on the mat")
 	model.ProcessDocument("the cat hopes to see the hat")
 	// model.PrintDistFreqs()
 	model.Freeze()
 	printSuggestions(model, "the cat")
-	return
 }
 
 func printSuggestions(model *distVoteGen.Model, query string) {
