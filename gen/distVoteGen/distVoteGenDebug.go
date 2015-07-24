@@ -11,8 +11,8 @@ func (m *Model) PrintDistFreqs() {
 				continue
 			}
 			fmt.Println("\t", "#", dist+1)
-			for tokenId, freq := range freqTable {
-				fmt.Println("\t\t", m.tokenTable.WordForId(tokenId), ":", freq)
+			for tokenID, freq := range freqTable {
+				fmt.Println("\t\t", m.tokenTable.WordForId(tokenID), ":", freq)
 			}
 		}
 	}

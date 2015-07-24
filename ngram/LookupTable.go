@@ -8,11 +8,11 @@ import (
 )
 
 type NGramId uint32
-type NGramName []tokens.TokenId
+type NGramName tokens.IDs
 
 type NGramCollisionCheck struct {
 	Id       NGramId
-	tokenIds []tokens.TokenId
+	tokenIDs tokens.IDs
 }
 
 type NGramTable struct {
@@ -20,7 +20,7 @@ type NGramTable struct {
 	N          int
 	counts     map[NGramId]int32
 	seenGrams  map[tokens.Hash][]NGramCollisionCheck
-	tokenIds   map[NGramId][]tokens.TokenId
+	tokenIDs   map[NGramId]tokens.IDs
 }
 
 func NewNGramTable(N int, tokenTable *tokens.TokenTable) *NGramTable {
@@ -29,7 +29,7 @@ func NewNGramTable(N int, tokenTable *tokens.TokenTable) *NGramTable {
 		N,
 		map[NGramId]int32{},
 		map[tokens.Hash][]NGramCollisionCheck{},
-		map[NGramId][]tokens.TokenId{},
+		map[NGramId]tokens.IDs{},
 	}
 }
 
@@ -37,11 +37,11 @@ var (
 	nextNGramId = NGramId(1)
 )
 
-func (n *NGramTable) processTokens(tokenIds []tokens.TokenId) NGramId {
-	tokensHash := tokens.HashTokens(tokenIds)
+func (n *NGramTable) processTokens(tokenIDs tokens.IDs) NGramId {
+	tokensHash := tokens.HashTokens(tokenIDs)
 	ngramId := NGramId(0)
 	for _, collisionCheck := range n.seenGrams[tokensHash] {
-		if tokens.Equal(collisionCheck.tokenIds, tokenIds) {
+		if tokens.Equal(collisionCheck.tokenIDs, tokenIDs) {
 			ngramId = collisionCheck.Id
 			break
 		}
@@ -49,16 +49,16 @@ func (n *NGramTable) processTokens(tokenIds []tokens.TokenId) NGramId {
 	if ngramId == 0 {
 		ngramId = nextNGramId
 		nextNGramId += 1
-		n.seenGrams[tokensHash] = append(n.seenGrams[tokensHash], NGramCollisionCheck{ngramId, tokenIds})
-		n.tokenIds[ngramId] = tokenIds
+		n.seenGrams[tokensHash] = append(n.seenGrams[tokensHash], NGramCollisionCheck{ngramId, tokenIDs})
+		n.tokenIDs[ngramId] = tokenIDs
 	}
 	return ngramId
 }
 
 func (n *NGramTable) ProcessDocument(document string) {
-	tokenIds := n.tokenTable.ProcessDocument(document)
-	for i, j := 0, n.N; j < len(tokenIds); i, j = i+1, j+1 {
-		ngramId := n.processTokens(tokenIds[i:j])
+	tokenIDs := n.tokenTable.ProcessDocument(document)
+	for i, j := 0, n.N; j < len(tokenIDs); i, j = i+1, j+1 {
+		ngramId := n.processTokens(tokenIDs[i:j])
 		n.counts[ngramId] += 1
 	}
 }
@@ -70,10 +70,10 @@ func (n *NGramTable) PrintCounts() {
 }
 
 func (n *NGramTable) StringForId(ngramId NGramId) string {
-	tokenIds := n.tokenIds[ngramId]
-	result := make([]string, len(tokenIds))
-	for i, tokenId := range tokenIds {
-		result[i] = n.tokenTable.WordForId(tokenId)
+	tokenIDs := n.tokenIDs[ngramId]
+	result := make([]string, len(tokenIDs))
+	for i, tokenID := range tokenIDs {
+		result[i] = n.tokenTable.WordForId(tokenID)
 	}
 	return strings.Join(result, " ")
 }
